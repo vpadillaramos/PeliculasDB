@@ -35,6 +35,8 @@ public class Pelicula {
 	public static String[] getAGenero() {
 		return aGenero;
 	}
+	
+	
 
 	public static String[] getARating() {
 		return aRating;
@@ -44,16 +46,16 @@ public class Pelicula {
 		return genero;
 	}
 
-	public void setGenero(int i) {
-		genero = aGenero[i];
+	public void setGenero(String genero) { 
+		this.genero = genero;
 	}
 
 	public String getRating() {
 		return rating;
 	}
 
-	public void setRating(int i) {
-		rating = aRating[i];
+	public void setRating(String rating) {
+		this.rating = rating;
 	}
 
 	public String getTitulo() {
@@ -143,6 +145,6 @@ public class Pelicula {
 			aux = "[V]";
 		else
 			aux = "[X]";
-		return aux + " " + titulo;
+		return aux + " " + titulo + " " + id;
 	}
 }

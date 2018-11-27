@@ -249,3 +249,4 @@ public class Vista extends JFrame {
 	}
 
 }
+
