@@ -1,5 +1,7 @@
 package com.vpr.pojo;
 
+import java.util.Date;
+
 public class Pelicula {
 	//Atributos
 	private int id;
@@ -10,8 +12,8 @@ public class Pelicula {
 	private static String[] aRating = {"", "A", "7", "12", "16", "18", "X"};
 	private String rating;
 	private String director;
-	private String fechaEstreno;
-	private String fechaVista;
+	private Date fechaEstreno;
+	private Date fechaVista;
 	private int duracion;
 	private String portada;
 	private float nota;
@@ -82,19 +84,19 @@ public class Pelicula {
 		this.director = director;
 	}
 
-	public String getFechaEstreno() {
+	public Date getFechaEstreno() {
 		return fechaEstreno;
 	}
 
-	public void setFechaEstreno(String fechaEstreno) {
+	public void setFechaEstreno(Date fechaEstreno) {
 		this.fechaEstreno = fechaEstreno;
 	}
 
-	public String getFechaVista() {
+	public Date getFechaVista() {
 		return fechaVista;
 	}
 
-	public void setFechaVista(String fechaVista) {
+	public void setFechaVista(Date fechaVista) {
 		this.fechaVista = fechaVista;
 	}
 
@@ -145,6 +147,6 @@ public class Pelicula {
 			aux = "[V]";
 		else
 			aux = "[X]";
-		return aux + " " + titulo + " " + id;
+		return aux + " " + titulo + " ";
 	}
 }

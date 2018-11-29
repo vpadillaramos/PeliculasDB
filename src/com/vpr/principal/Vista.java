@@ -61,6 +61,10 @@ public class Vista extends JFrame {
 	public JLabel lbBuscar;
 	public JTextField tfBuscar;
 	public TextAutoCompleter tac;
+	public JLabel lbVistas;
+	public JLabel lbTotal;
+	public JTextField tfPeliculasVistas;
+	public JTextField tfTotalPeliculas;
 	
 	
 	public Vista() {
@@ -78,22 +82,22 @@ public class Vista extends JFrame {
 		
 		btEditar = new JButton("Editar");
 		btEditar.setActionCommand("editar");
-		btEditar.setBounds(349, 78, 89, 23);
+		btEditar.setBounds(349, 63, 89, 23);
 		getContentPane().add(btEditar);
 		
 		btBorrar = new JButton("Borrar");
 		btBorrar.setActionCommand("borrar");
-		btBorrar.setBounds(349, 123, 89, 23);
+		btBorrar.setBounds(349, 201, 89, 23);
 		getContentPane().add(btBorrar);
 		
 		btCancelar = new JButton("Cancelar");
 		btCancelar.setActionCommand("cancelar");
-		btCancelar.setBounds(349, 167, 89, 23);
+		btCancelar.setBounds(349, 131, 89, 23);
 		getContentPane().add(btCancelar);
 		
 		btGuardar = new JButton("Guardar");
 		btGuardar.setActionCommand("guardar");
-		btGuardar.setBounds(349, 212, 89, 23);
+		btGuardar.setBounds(349, 97, 89, 23);
 		getContentPane().add(btGuardar);
 		
 		scrollPane = new JScrollPane();
@@ -106,7 +110,7 @@ public class Vista extends JFrame {
 		listPeliculas.setModel(modeloPelicula);
 		
 		panBasico = new JPanel();
-		panBasico.setBounds(10, 11, 297, 44);
+		panBasico.setBounds(10, 11, 316, 69);
 		getContentPane().add(panBasico);
 		panBasico.setLayout(null);
 		
@@ -115,17 +119,17 @@ public class Vista extends JFrame {
 		panBasico.add(lbTitulo);
 		
 		tfTitulo = new JTextField();
-		tfTitulo.setBounds(73, 8, 86, 20);
+		tfTitulo.setBounds(121, 8, 185, 20);
 		panBasico.add(tfTitulo);
 		tfTitulo.setColumns(10);
 		
 		chbVista = new JCheckBox("Vista");
-		chbVista.setBounds(194, 7, 97, 23);
+		chbVista.setBounds(121, 39, 97, 23);
 		panBasico.add(chbVista);
 		chbVista.setActionCommand("vista");
 		
 		panAvanzado = new JPanel();
-		panAvanzado.setBounds(10, 95, 297, 427);
+		panAvanzado.setBounds(10, 91, 316, 519);
 		getContentPane().add(panAvanzado);
 		panAvanzado.setLayout(null);
 		panAvanzado.setVisible(false);
@@ -135,7 +139,7 @@ public class Vista extends JFrame {
 		panAvanzado.add(lbSinopsis);
 		
 		btSinopsis = new JButton("Escribir sinopsis");
-		btSinopsis.setBounds(104, 7, 120, 23);
+		btSinopsis.setBounds(121, 7, 120, 23);
 		panAvanzado.add(btSinopsis);
 		btSinopsis.setActionCommand("sinopsis");
 		
@@ -144,7 +148,7 @@ public class Vista extends JFrame {
 		panAvanzado.add(lbGenero);
 		
 		cbGenero = new JComboBox();
-		cbGenero.setBounds(121, 37, 86, 20);
+		cbGenero.setBounds(121, 37, 120, 20);
 		panAvanzado.add(cbGenero);
 		
 		lbRating = new JLabel("Rating de edad");
@@ -152,7 +156,7 @@ public class Vista extends JFrame {
 		panAvanzado.add(lbRating);
 		
 		cbRating = new JComboBox();
-		cbRating.setBounds(121, 68, 84, 20);
+		cbRating.setBounds(121, 68, 120, 20);
 		panAvanzado.add(cbRating);
 		
 		lbDirector = new JLabel("Director/a");
@@ -160,7 +164,7 @@ public class Vista extends JFrame {
 		panAvanzado.add(lbDirector);
 		
 		tfDirector = new JTextField();
-		tfDirector.setBounds(123, 99, 86, 20);
+		tfDirector.setBounds(121, 99, 120, 20);
 		panAvanzado.add(tfDirector);
 		tfDirector.setColumns(10);
 		
@@ -169,84 +173,108 @@ public class Vista extends JFrame {
 		panAvanzado.add(lbFechaEstreno);
 		
 		dcFechaEstreno = new JDateChooser();
-		dcFechaEstreno.setBounds(129, 136, 95, 20);
+		dcFechaEstreno.setBounds(121, 136, 120, 20);
 		panAvanzado.add(dcFechaEstreno);
 		
 		lbFechaVista = new JLabel("Fecha vista");
-		lbFechaVista.setBounds(10, 167, 84, 14);
+		lbFechaVista.setBounds(10, 177, 84, 14);
 		panAvanzado.add(lbFechaVista);
 		
 		dcFechaVista = new JDateChooser();
-		dcFechaVista.setBounds(129, 167, 95, 20);
+		dcFechaVista.setBounds(121, 171, 120, 20);
 		panAvanzado.add(dcFechaVista);
 		
 		lbDuracion = new JLabel("Duraci\u00F3n");
-		lbDuracion.setBounds(10, 202, 69, 14);
+		lbDuracion.setBounds(10, 205, 69, 14);
 		panAvanzado.add(lbDuracion);
 		
 		tfDuracion = new JTextField();
-		tfDuracion.setBounds(138, 198, 86, 20);
+		tfDuracion.setBounds(121, 202, 120, 20);
 		panAvanzado.add(tfDuracion);
 		tfDuracion.setColumns(10);
 		
 		lblNota = new JLabel("Nota");
-		lblNota.setBounds(10, 227, 46, 14);
+		lblNota.setBounds(10, 235, 46, 14);
 		panAvanzado.add(lblNota);
 		
 		tfNota = new JTextField();
-		tfNota.setBounds(129, 229, 86, 20);
+		tfNota.setBounds(121, 233, 120, 20);
 		panAvanzado.add(tfNota);
 		tfNota.setColumns(10);
 		
 		lblNotas = new JLabel("Notas");
-		lblNotas.setBounds(10, 263, 46, 14);
+		lblNotas.setBounds(10, 268, 46, 14);
 		panAvanzado.add(lblNotas);
 		
-		btNotas = new JButton("Notas");
-		btNotas.setBounds(135, 260, 89, 23);
+		btNotas = new JButton("Escribir notas");
+		btNotas.setBounds(121, 264, 120, 23);
 		panAvanzado.add(btNotas);
 		btNotas.setActionCommand("notas");
 		
 		lbPortada = new JLabel("");
-		lbPortada.setBounds(65, 316, 99, 85);
+		lbPortada.setBounds(10, 308, 296, 200);
 		panAvanzado.add(lbPortada);
 		lbPortada.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Portada", TitledBorder.CENTER, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		
 		chbAvanzado = new JCheckBox("Detalles avanzados");
 		chbAvanzado.setActionCommand("detallesAvanzados");
-		chbAvanzado.setBounds(332, 267, 135, 23);
+		chbAvanzado.setBounds(332, 270, 135, 23);
 		getContentPane().add(chbAvanzado);
 		
 		btDeshacer = new JButton("Deshacer borrado");
 		btDeshacer.setActionCommand("deshacer");
-		btDeshacer.setBounds(528, 333, 119, 23);
+		btDeshacer.setBounds(509, 386, 155, 23);
 		getContentPane().add(btDeshacer);
 		
 		btBorrarTodo = new JButton("Borrar todo");
 		btBorrarTodo.setActionCommand("borrarTodo");
-		btBorrarTodo.setBounds(528, 383, 119, 23);
+		btBorrarTodo.setBounds(509, 569, 155, 23);
 		getContentPane().add(btBorrarTodo);
 		
 		chbAdicionRapida = new JCheckBox("Adici\u00F3n r\u00E1pida");
 		chbAdicionRapida.setActionCommand("adicionRapida");
-		chbAdicionRapida.setBounds(332, 299, 119, 23);
+		chbAdicionRapida.setBounds(333, 296, 119, 23);
 		getContentPane().add(chbAdicionRapida);
 		
 		lbBuscar = new JLabel("Buscar");
-		lbBuscar.setBounds(351, 371, 54, 14);
+		lbBuscar.setBounds(384, 362, 54, 14);
 		getContentPane().add(lbBuscar);
 		
 		tfBuscar = new JTextField();
 		tfBuscar.setActionCommand("buscar");
-		tfBuscar.setBounds(332, 404, 127, 20);
+		tfBuscar.setBounds(340, 387, 127, 20);
 		getContentPane().add(tfBuscar);
 		tfBuscar.setColumns(10);
 		tac = new TextAutoCompleter(tfBuscar);
 		tac.setMode(0); //busca una subcadena
 		tac.setCaseSensitive(false);
 		
+		lbVistas = new JLabel("Vistas:");
+		lbVistas.setBounds(517, 333, 46, 14);
+		getContentPane().add(lbVistas);
+		
+		lbTotal = new JLabel("Total:");
+		lbTotal.setBounds(517, 358, 46, 14);
+		getContentPane().add(lbTotal);
+		
+		tfPeliculasVistas = new JTextField();
+		tfPeliculasVistas.setBounds(590, 333, 62, 20);
+		getContentPane().add(tfPeliculasVistas);
+		tfPeliculasVistas.setColumns(10);
+		tfPeliculasVistas.setEditable(false);
+		
+		tfTotalPeliculas = new JTextField();
+		tfTotalPeliculas.setBounds(590, 355, 62, 20);
+		getContentPane().add(tfTotalPeliculas);
+		tfTotalPeliculas.setColumns(10);
+		tfTotalPeliculas.setEditable(false);
+		
+		
 		setVisible(true);
 	}
-
+	
+	public void anadirBuscar(String titulo) {
+		tac.addItem(titulo);
+	}
 }
 

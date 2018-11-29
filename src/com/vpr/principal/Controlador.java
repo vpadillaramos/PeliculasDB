@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.Locale;
 
 import javax.swing.ImageIcon;
@@ -30,8 +31,11 @@ public class Controlador implements ActionListener, ListSelectionListener, Mouse
 	//Atributos
 	private Modelo modelo;
 	private Vista vista;
-	private String sinopsis, notas;
+	private String sinopsisPelicula, notasPelicula;
+	Sinopsis sinopsis = new Sinopsis();
+	Nota nota = new Nota();
 	private File ficheroSeleccionado;
+	private boolean editar;
 	
 	public Controlador(Modelo modelo, Vista vista) {
 		this.modelo = modelo;
@@ -100,10 +104,14 @@ public class Controlador implements ActionListener, ListSelectionListener, Mouse
 		vista.modeloPelicula.removeAllElements();
 		
 		try {
-			for(Pelicula p: modelo.getPeliculas())
+			for(Pelicula p: modelo.getPeliculas()) {
 				vista.modeloPelicula.addElement(p);
+				vista.anadirBuscar(p.getTitulo());
+			}
+			vista.tfPeliculasVistas.setText(String.valueOf(modelo.peliculasVistas()));
+			vista.tfTotalPeliculas.setText(String.valueOf(modelo.totalPeliculas()));
 		} catch (SQLException e) {
-			Util.mensajeError("No se pudieron obetener las peliculas");
+			Util.mensajeError("No se pudo refrescar la lista");
 			e.printStackTrace();
 		}
 	}
@@ -119,6 +127,10 @@ public class Controlador implements ActionListener, ListSelectionListener, Mouse
 		
 		vista.dcFechaEstreno.setDate(null);
 		vista.dcFechaVista.setDate(null);
+		vista.lbPortada.setIcon(null);
+		
+		sinopsis.taSinopsis.setText("");
+		nota.taNotas.setText("");
 	}
 	
 	public void addListeners() {
@@ -146,23 +158,29 @@ public class Controlador implements ActionListener, ListSelectionListener, Mouse
 			vista.btNueva.setEnabled(!editando);
 			vista.btBorrar.setEnabled(!editando);
 			vista.btGuardar.setEnabled(editando);
-			
 			vista.btSinopsis.setEnabled(editando);
 			vista.btNotas.setEnabled(editando);
+			vista.btDeshacer.setEnabled(!editando);
+			vista.btBorrarTodo.setEnabled(!editando);
 			
 			vista.tfDirector.setEditable(editando);
 			vista.tfDuracion.setEditable(editando);
 			vista.tfNota.setEditable(editando);
 			vista.tfTitulo.setEditable(editando);
-			vista.tfNota.setEnabled(editando);
+			vista.tfNota.setEditable(editando);
 			vista.cbGenero.setEnabled(editando);
 			vista.cbRating.setEnabled(editando);
 			vista.chbVista.setEnabled(editando);
 			vista.dcFechaEstreno.setEnabled(editando);
 			vista.dcFechaVista.setEnabled(editando);
-			//vista.lbPortada.addMouseListener(this);
+			vista.lbPortada.addMouseListener(this);
 			
 			vista.listPeliculas.setEnabled(!editando);
+			
+			sinopsis.taSinopsis.setEditable(editando);
+			sinopsis.btGuardar.setEnabled(editando);
+			nota.taNotas.setEditable(editando);
+			nota.btGuardar.setEnabled(editando);
 		}
 		else {
 			vista.btCancelar.setEnabled(editando);
@@ -170,35 +188,39 @@ public class Controlador implements ActionListener, ListSelectionListener, Mouse
 			vista.btNueva.setEnabled(!editando);
 			vista.btBorrar.setEnabled(editando);
 			vista.btGuardar.setEnabled(editando);
-			
 			vista.btSinopsis.setEnabled(editando);
 			vista.btNotas.setEnabled(editando);
+			vista.btDeshacer.setEnabled(!editando);
+			vista.btBorrarTodo.setEnabled(!editando);
 			
 			vista.tfDirector.setEditable(editando);
 			vista.tfDuracion.setEditable(editando);
 			vista.tfNota.setEditable(editando);
 			vista.tfTitulo.setEditable(editando);
-			vista.tfNota.setEnabled(editando);
+			vista.tfNota.setEditable(editando);
 			vista.cbGenero.setEnabled(editando);
 			vista.cbRating.setEnabled(editando);
 			vista.chbVista.setEnabled(editando);
 			vista.dcFechaEstreno.setEnabled(editando);
 			vista.dcFechaVista.setEnabled(editando);
-			//vista.lbPortada.removeMouseListener(this);
+			vista.lbPortada.removeMouseListener(this);
 			
 			vista.listPeliculas.setEnabled(!editando);
 			vista.listPeliculas.clearSelection();
+			
+			sinopsis.taSinopsis.setEditable(editando);
+			sinopsis.btGuardar.setEnabled(editando);
+			nota.taNotas.setEditable(editando);
+			nota.btGuardar.setEnabled(editando);
 		}
 	}
 	
 	public String escribirSinopsis() {
-		Sinopsis sinopsis = new Sinopsis();
 		sinopsis.ponerVisible(true);
 		return sinopsis.getSinopsis();
 	}
 	
 	public String escribirNotas() {
-		Nota nota = new Nota();
 		nota.ponerVisible(true);
 		return nota.getNotas();
 	}
@@ -212,6 +234,7 @@ public class Controlador implements ActionListener, ListSelectionListener, Mouse
 		
 		switch(e.getActionCommand()) {
 		case "nueva":
+			limpiar();
 			modoEdicion(true);
 			vista.tfTitulo.requestFocus();
 			break;
@@ -221,12 +244,12 @@ public class Controlador implements ActionListener, ListSelectionListener, Mouse
 			modoEdicion(false);
 			break;
 		
-		case "modificar":
+		case "editar":
+			editar = true;
 			modoEdicion(true);
 			break;
 			
 		case "borrar":
-			
 			try {
 				modelo.eliminarPelicula(vista.listPeliculas.getSelectedValue());
 				Util.mensajeInformacion("Eliminada", "Película eliminada correctamente");
@@ -241,7 +264,6 @@ public class Controlador implements ActionListener, ListSelectionListener, Mouse
 			break;
 			
 		case "guardar":
-			modoEdicion(false);
 			//****CONTROL DE ENTRADA DE DATOS******
 			if(vista.tfTitulo.getText().equals("")) {
 				Util.mensajeError("El título es obligatorio");
@@ -266,17 +288,22 @@ public class Controlador implements ActionListener, ListSelectionListener, Mouse
 				vista.tfNota.selectAll();
 				return;
 			}
+			
+			if(sinopsisPelicula == null)
+				sinopsisPelicula = "";
+			if(notasPelicula == null)
+				notasPelicula = "";
 				
 			
 			Pelicula pelicula = new Pelicula();
 			
 			pelicula.setTitulo(vista.tfTitulo.getText());
-			pelicula.setSinopsis(sinopsis);
+			pelicula.setSinopsis(sinopsisPelicula);
 			pelicula.setGenero(String.valueOf(vista.cbGenero.getSelectedItem()));
 			pelicula.setRating(String.valueOf(vista.cbRating.getSelectedItem()));
 			pelicula.setDirector(vista.tfDirector.getText());
 			pelicula.setDuracion(Integer.parseInt(vista.tfDuracion.getText()));
-			pelicula.setNotas(notas);
+			pelicula.setNotas(notasPelicula);
 			pelicula.setVista(vista.chbVista.isSelected());
 			
 			
@@ -293,17 +320,13 @@ public class Controlador implements ActionListener, ListSelectionListener, Mouse
 				pelicula.setNota(Float.parseFloat(vista.tfNota.getText()));
 			
 			//Fechas
-			String fechaEstreno;
-			String fechaVista;
-			Locale fCastellano = new Locale("es","Es","Traditional.win");
-			if(vista.dcFechaEstreno.getDate() == null)
-				fechaEstreno = "";
-			else
-				fechaEstreno = DateFormat.getDateInstance(DateFormat.SHORT, fCastellano).format(vista.dcFechaEstreno.getDate());
-			if(vista.dcFechaVista.getDate() == null)
-				fechaVista = "";
-			else
-				fechaVista = DateFormat.getDateInstance(DateFormat.SHORT, fCastellano).format(vista.dcFechaVista.getDate());
+			Date fechaEstreno = null;
+			Date fechaVista = null;
+			
+			if(vista.dcFechaEstreno.getDate() != null)
+				fechaEstreno = vista.dcFechaEstreno.getDate();
+			if(vista.dcFechaVista.getDate() != null)
+				fechaVista = vista.dcFechaVista.getDate();
 			
 			pelicula.setFechaEstreno(fechaEstreno);
 			pelicula.setFechaVista(fechaVista);
@@ -315,7 +338,7 @@ public class Controlador implements ActionListener, ListSelectionListener, Mouse
 				
 				try {
 					Util.copiarImagen(ficheroSeleccionado.getAbsolutePath(), nombreImagen);
-					pelicula.setPortada(ficheroSeleccionado.getAbsolutePath() + File.separator + nombreImagen);
+					pelicula.setPortada(nombreImagen);
 				} catch (IOException e1) {
 					Util.mensajeError("No se puedo copiar la imagen");
 					e1.printStackTrace();
@@ -328,8 +351,16 @@ public class Controlador implements ActionListener, ListSelectionListener, Mouse
 			}
 			
 			try {
-				modelo.guardarPelicula(pelicula);
-				Util.mensajeInformacion("Guardada", "Película guardada correctamente");
+				if(editar) {
+					pelicula.setId(vista.listPeliculas.getSelectedValue().getId());
+					modelo.modificarPelicula(pelicula);
+					Util.mensajeInformacion("Editada", "Película editada correctamente");
+					editar = false;
+				}
+				else {
+					modelo.guardarPelicula(pelicula);
+					Util.mensajeInformacion("Guardada", "Película guardada correctamente");
+				}
 			} catch (SQLException e1) {
 				Util.mensajeError("No se puedo guardar la pelicula");
 				e1.printStackTrace();
@@ -338,27 +369,82 @@ public class Controlador implements ActionListener, ListSelectionListener, Mouse
 			
 			refrescarLista();
 			limpiar();
-			modoEdicion(false);
+			if(vista.chbAdicionRapida.isSelected()) 
+				vista.tfTitulo.requestFocus();
+			else
+				modoEdicion(false);
 			
 			break;
 			
 		case "sinopsis":
-			sinopsis = escribirSinopsis();
+			sinopsisPelicula = escribirSinopsis();
 			break;
 			
 		case "notas":
-			notas = escribirNotas();
+			notasPelicula = escribirNotas();
+			break;
+		case "deshacer":
+			try {
+				modelo.deshacer();
+				refrescarLista();
+			} catch (SQLException e1) {
+				Util.mensajeError("No se pudo deshacer el borrado");
+				e1.printStackTrace();
+			}
+			break;
+		case "borrarTodo":
+			try {
+				modelo.borrarTodo();
+				refrescarLista();
+			} catch (SQLException e1) {
+				Util.mensajeError("No se puedo borrar la tabla");
+				e1.printStackTrace();
+			}
+			break;
+		default:
+
 			break;
 		}
-		
 	}
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		if(vista.listPeliculas.getSelectedIndex() == -1)
 			return;
+		
 		vista.btEditar.setEnabled(true);
 		vista.btBorrar.setEnabled(true);
+		vista.btSinopsis.setEnabled(true);
+		vista.btNotas.setEnabled(true);
+		if(editar) {
+			sinopsis.btGuardar.setEnabled(editar);
+			nota.btGuardar.setEnabled(editar);
+		}
+		else {
+			sinopsis.btGuardar.setEnabled(editar);
+			nota.btGuardar.setEnabled(editar);
+		}
+		
+		//Muestro los datos
+		Pelicula pelicula = vista.listPeliculas.getSelectedValue();
+		vista.tfTitulo.setText(pelicula.getTitulo());
+		sinopsis.taSinopsis.setText(pelicula.getSinopsis());
+		vista.cbGenero.setSelectedItem(pelicula.getGenero());
+		vista.cbRating.setSelectedItem(pelicula.getRating());
+		vista.tfDirector.setText(pelicula.getDirector());
+
+
+		if(pelicula.getFechaEstreno() != null)
+			vista.dcFechaEstreno.setDate(pelicula.getFechaEstreno());
+		if(pelicula.getFechaVista() != null)
+			vista.dcFechaVista.setDate(pelicula.getFechaVista());
+
+
+		vista.tfDuracion.setText(String.valueOf(pelicula.getDuracion()));
+		vista.lbPortada.setIcon(new ImageIcon("portadas" + File.separator + pelicula.getPortada()));
+		vista.tfNota.setText(String.valueOf(pelicula.getNota()));
+		nota.taNotas.setText(pelicula.getNotas());
+		vista.chbVista.setSelected(pelicula.isVista());
 	}
 
 	@Override
